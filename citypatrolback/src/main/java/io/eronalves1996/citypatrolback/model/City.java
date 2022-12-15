@@ -1,7 +1,11 @@
 package io.eronalves1996.citypatrolback.model;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class City {
@@ -10,6 +14,17 @@ public class City {
     private String id;
     private String name;
     private long populationNumber;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private List<Hood> hoods;
+
+    public List<Hood> getHoods() {
+        return hoods;
+    }
+
+    public void setHoods(List<Hood> hoods) {
+        this.hoods = hoods;
+    }
 
     public String getId() {
         return id;
