@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -42,17 +43,17 @@ public class CityController {
     }
 
     @PostMapping
-    public City createCity(City city) {
+    public City createCity(@RequestBody City city) {
         return repository.save(city);
     }
 
     @PutMapping
-    public City updateCityInformation(City city) {
+    public City updateCityInformation(@RequestBody City city) {
         return createCity(city);
     }
 
-    @DeleteMapping
-    public void deleteCity(int id) {
+    @DeleteMapping("/{id}")
+    public void deleteCity(@PathVariable("id") int id) {
         repository.deleteById(id);
     }
 
