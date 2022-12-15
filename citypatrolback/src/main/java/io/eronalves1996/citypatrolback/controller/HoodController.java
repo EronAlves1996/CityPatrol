@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -50,7 +51,7 @@ public class HoodController {
     }
 
     @PostMapping
-    public Hood createHood(@PathVariable("cityId") int cityId, Hood hood) {
+    public Hood createHood(@PathVariable("cityId") int cityId, @RequestBody Hood hood) {
         Optional<City> city = cityRepository.findById(cityId);
         if (!city.isPresent())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
@@ -59,7 +60,7 @@ public class HoodController {
     }
 
     @PutMapping
-    public Hood updateHood(@PathVariable("cityId") int cityId, Hood hood) {
+    public Hood updateHood(@PathVariable("cityId") int cityId, @RequestBody Hood hood) {
         return createHood(cityId, hood);
     }
 
