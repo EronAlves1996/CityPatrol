@@ -3,6 +3,7 @@ package io.eronalves1996.citypatrolback.model;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +16,9 @@ public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private int id;
+
+    @Column(name = "city_name")
     private String name;
     private long populationNumber;
 
@@ -23,20 +26,20 @@ public class City {
     @JoinColumn(name = "hood_id", nullable = false)
     private List<Hood> hoods;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public List<Hood> getHoods() {
         return hoods;
     }
 
     public void setHoods(List<Hood> hoods) {
         this.hoods = hoods;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getName() {

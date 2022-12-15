@@ -2,6 +2,7 @@ package io.eronalves1996.citypatrolback.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,12 +16,16 @@ public class Crime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(name = "crime_type")
     private CrimeType type;
+
+    @Column(name = "crime_description")
     private String descrition;
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "crime_id", nullable = false)
+    @JoinColumn(name = "hood_id", nullable = false)
     private Hood hood;
 
     public int getId() {
