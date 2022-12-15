@@ -24,7 +24,7 @@ INSERT INTO hood VALUES
 
     -- Mariana hoods
 
-    (8 "Centro", "SOUTH_WEST", 30000, 3),
+    (8, "Centro", "SOUTH_WEST", 30000, 3),
     (9, "Gazé", "EAST", 10000, 3),
     (10, "Fedor", "WEST", 15000, 3),
     (11, "Padre", "NORTH", 10000, 3),

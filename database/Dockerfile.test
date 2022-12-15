@@ -1,11 +1,9 @@
 FROM mysql:latest
-ENV MYSQL_PASSWORD=test
-ENV MYSQL_USER=test
-ENV MYSQL_DATABASE=test
+ENV MYSQL_PASSWORD test
+ENV MYSQL_ROOT_PASSWORD test
+ENV MYSQL_USER test
+ENV MYSQL_DATABASE test
 WORKDIR /usr/migration
-COPY migration.test.sql .
-COPY seed.test.sql .
-RUN mysql -u test -p test < migration.test.sql
-RUN mysql -u test -p test < seed.test.sql
+ADD migration.test.sql /docker-entrypoint-initdb.d
+ADD seed.test.sql /docker-entrypoint-initdb.d
 EXPOSE 3306
-ENTRYPOINT ["mysqld"]
