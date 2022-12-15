@@ -2,6 +2,8 @@ package io.eronalves1996.citypatrolback.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,6 +20,7 @@ public class Hood {
     private long populationNumber;
 
     @ManyToOne
+    @JsonIgnore
     private City city;
 
     @OneToMany(cascade = CascadeType.ALL)

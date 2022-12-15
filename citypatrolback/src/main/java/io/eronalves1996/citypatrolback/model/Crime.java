@@ -1,5 +1,7 @@
 package io.eronalves1996.citypatrolback.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -13,6 +15,7 @@ public class Crime {
     private String descrition;
 
     @ManyToOne
+    @JsonIgnore
     private Hood hood;
 
     public int getId() {
