@@ -65,8 +65,12 @@ public class HoodController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteHood(@PathVariable("id") int id) {
-        hoodRepository.deleteById(id);
+    public void deleteHood(@PathVariable("cityId") int cityId, @PathVariable("id") int id) {
+        Optional<City> city = cityRepository.findById(cityId);
+        if (!city.isPresent())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "City/Hood doesn't exist or this hood doesn't belong on this city");
+        hoodRepository.deleteByCityAndId(city.get(), id);
     }
 
 }
