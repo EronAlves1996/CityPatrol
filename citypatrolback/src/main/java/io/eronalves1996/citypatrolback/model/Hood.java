@@ -1,21 +1,27 @@
 package io.eronalves1996.citypatrolback.model;
 
+import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Hood {
 
     @Id
-    public int id;
-    public String name;
-    public Region region;
-    public long populationNumber;
+    private int id;
+    private String name;
+    private Region region;
+    private long populationNumber;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    public City city;
+    @ManyToOne
+    private City city;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Crime> crimes;
 
     public int getId() {
         return id;
