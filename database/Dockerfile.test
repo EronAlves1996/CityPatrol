@@ -3,9 +3,9 @@ ENV MYSQL_PASSWORD=test
 ENV MYSQL_USER=test
 ENV MYSQL_DATABASE=test
 WORKDIR /usr/migration
-COPY migration.sql .
-COPY seed.sql .
-RUN mysql -u test -p test < migration.sql
-RUN mysql -u test -p test < seed.sql
+COPY migration.test.sql .
+COPY seed.test.sql .
+RUN mysql -u test -p test < migration.test.sql
+RUN mysql -u test -p test < seed.test.sql
 EXPOSE 3306
 ENTRYPOINT ["mysqld"]
