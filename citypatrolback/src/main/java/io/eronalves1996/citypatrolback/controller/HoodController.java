@@ -42,12 +42,18 @@ public class HoodController {
     public Hood getHood(@PathVariable("cityId") int cityId, @PathVariable("id") int id) {
         Optional<City> city = cityRepository.findById(cityId);
         if (city.isPresent())
-            return hoodRepository.findByCityAndId(city, id);
+            return hoodRepository.findByCityAndId(city.get(), id);
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City or hood doesn't exist");
 
     }
 
     @PostMapping
-    public Hood c
+    public Hood createHood(@PathVariable("cityId") int cityId, Hood hood) {
+        Optional<City> city = cityRepository.findById(cityId);
+        if (!city.isPresent())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
+        hood.setCity(city.get());
+        return hoodRepository.save(hood);
+    }
 
 }
