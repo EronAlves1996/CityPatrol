@@ -26,6 +26,14 @@ public class Hood {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Crime> crimes;
 
+    public List<Crime> getCrimes() {
+        return crimes;
+    }
+
+    public void setCrimes(List<Crime> crimes) {
+        this.crimes = crimes;
+    }
+
     public int getId() {
         return id;
     }
