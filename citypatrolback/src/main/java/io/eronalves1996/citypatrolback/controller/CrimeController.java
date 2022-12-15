@@ -7,12 +7,15 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.service.annotation.GetExchange;
 
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Crime;
+import io.eronalves1996.citypatrolback.model.Hood;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 import io.eronalves1996.citypatrolback.repository.CrimeRepository;
 import io.eronalves1996.citypatrolback.repository.HoodRepository;
@@ -50,6 +53,24 @@ public class CrimeController {
                     });
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
+    }
+
+    @GetMapping
+    public List<Crime> getAllCrimesFromHood(@PathParam("hood") int hoodId) {
+        Optional<Hood> hood = hoodRepository.findById(hoodId);
+        if (hood.isPresent()) {
+            return hood.get().getCrimes();
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hood doesn't exist");
+    }
+
+    @GetMapping("/{id}")
+    public Crime getCrimeById(@PathVariable("id") int id) {
+        Optional<Crime> crime = crimeRepository.findById(id);
+        if (crime.isPresent()) {
+            return crime.get();
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Crime registry doesn't exist");
     }
 
 }
