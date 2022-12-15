@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.service.annotation.GetExchange;
 
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Crime;
@@ -84,6 +84,11 @@ public class CrimeController {
     @PutMapping
     public Crime updateCrime(@RequestBody Crime crime) {
         return createCrimeRegistry(crime);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCrime(@PathVariable("id") int id) {
+        crimeRepository.deleteById(id);
     }
 
 }
