@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -21,8 +20,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
@@ -51,10 +48,13 @@ class CitypatrolbackApplicationTests {
 	@Test
 	public void testGetCities() {
 		Iterable<City> cities = cityRepository.findAll();
-		ResponseEntity<Iterable> response = restTemplate.getForEntity("http://localhost:8080/city", Iterable.class);
-		Iterable<City> citiesFetched = response.getBody();
+		ResponseEntity<City[]> response = restTemplate.getForEntity("http://localhost:8080/city", City[].class);
+		City[] citiesFetched = response.getBody();
+		List<City> citiesTested = new ArrayList<>();
+		cities.forEach(citiesTested::add);
+
 		assertNotNull(citiesFetched);
-		assertEquals(List.of(cities).size(), List.of(citiesFetched).size());
+		assertEquals(citiesTested.size(), List.of(citiesFetched).size());
 	}
 
 	@Test

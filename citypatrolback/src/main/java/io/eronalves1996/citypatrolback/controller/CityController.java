@@ -2,7 +2,6 @@ package io.eronalves1996.citypatrolback.controller;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +23,6 @@ public class CityController {
 
     private CityRepository repository;
 
-    @Autowired
     public CityController(CityRepository repository) {
         this.repository = repository;
     }
