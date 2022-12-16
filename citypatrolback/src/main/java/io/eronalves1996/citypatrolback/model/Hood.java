@@ -30,7 +30,7 @@ public class Hood {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
-    @OneToMany(mappedBy = "crime")
+    @OneToMany(mappedBy = "hood")
     private List<Crime> crimes;
 
     public List<Crime> getCrimes() {
