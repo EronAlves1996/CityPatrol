@@ -3,3 +3,5 @@ spring:
     url: jdbc:mysql://localhost:3306/test
     username: test
     password: test
+  jpa:
+    show-sql: true
