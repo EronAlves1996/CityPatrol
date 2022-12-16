@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,7 +23,6 @@ import io.eronalves1996.citypatrolback.model.Hood;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 import io.eronalves1996.citypatrolback.repository.CrimeRepository;
 import io.eronalves1996.citypatrolback.repository.HoodRepository;
-import jakarta.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/crime")
@@ -41,12 +41,16 @@ public class CrimeController {
     }
 
     @GetMapping
-    public Iterable<Crime> getAllCrimes() {
+    public Iterable<Crime> getAllCrimes(@RequestParam(name = "city", required = false) int cityId,
+            @RequestParam(name = "hood", required = false) int hoodId) {
+        if (Integer.valueOf(cityId) != null)
+            return getAllCrimesFromCity(cityId);
+        if (Integer.valueOf(hoodId) != null)
+            return getAllCrimesFromHood(hoodId);
         return crimeRepository.findAll();
     }
 
-    @GetMapping
-    public List<Crime> getAllCrimesFromCity(@PathParam("city") int cityId) {
+    public List<Crime> getAllCrimesFromCity(int cityId) {
         Optional<City> city = cityRepository.findById(cityId);
         if (city.isPresent()) {
             return city.get().getHoods().stream().map(hood -> hood.getCrimes()).reduce(new ArrayList<Crime>(),
@@ -58,8 +62,7 @@ public class CrimeController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
     }
 
-    @GetMapping
-    public List<Crime> getAllCrimesFromHood(@PathParam("hood") int hoodId) {
+    public List<Crime> getAllCrimesFromHood(int hoodId) {
         Optional<Hood> hood = hoodRepository.findById(hoodId);
         if (hood.isPresent()) {
             return hood.get().getCrimes();
