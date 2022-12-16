@@ -27,6 +27,7 @@ import io.eronalves1996.citypatrolback.repository.CityRepository;
 @SpringBootTest
 class CityControllerTest {
 
+	private static final String API_URL = "http://localhost:8080/city";
 	private static ExecutorService executor = Executors.newSingleThreadExecutor();
 	private RestTemplate restTemplate = new RestTemplate();
 
@@ -48,7 +49,7 @@ class CityControllerTest {
 	@Test
 	public void testGetCities() {
 		Iterable<City> cities = cityRepository.findAll();
-		ResponseEntity<City[]> response = restTemplate.getForEntity("http://localhost:8080/city", City[].class);
+		ResponseEntity<City[]> response = restTemplate.getForEntity(API_URL, City[].class);
 		City[] citiesFetched = response.getBody();
 		List<City> citiesTested = new ArrayList<>();
 		cities.forEach(citiesTested::add);
@@ -62,7 +63,7 @@ class CityControllerTest {
 		Optional<City> testedCity = cityRepository.findById(1);
 		if (testedCity.isPresent()) {
 			int id = testedCity.get().getId();
-			ResponseEntity<City> cityFetched = restTemplate.getForEntity("http://localhost:8080/city/" + id,
+			ResponseEntity<City> cityFetched = restTemplate.getForEntity(API_URL + id,
 					City.class);
 			assertEquals(testedCity.get(), cityFetched.getBody());
 		}
@@ -71,7 +72,7 @@ class CityControllerTest {
 	@Test
 	public void testGetCityByAnIdThatNotExists() {
 		HttpStatusCode statusCode = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.getForEntity("http://localhost:8080/city/" + 30, City.class)).getStatusCode();
+				() -> restTemplate.getForEntity(API_URL + "/" + 30, City.class)).getStatusCode();
 		assertEquals(HttpStatusCode.valueOf(404), statusCode);
 	}
 
@@ -80,29 +81,29 @@ class CityControllerTest {
 		City city = new City();
 		city.setName("Divinópolis");
 		city.setPopulationNumber(20000);
-		ResponseEntity<City> cityCreated = restTemplate.postForEntity("http://localhost:8080/city", city, City.class);
+		ResponseEntity<City> cityCreated = restTemplate.postForEntity(API_URL, city, City.class);
 		assertNotNull(cityCreated.getBody().getId());
 	}
 
 	@Test
 	public void testPutCity() {
-		City city = restTemplate.getForEntity("http://localhost:8080/city/1", City.class).getBody();
+		City city = restTemplate.getForEntity(API_URL + "/" + 1, City.class).getBody();
 		city.setName("Josafá");
 		city.setHoods(null);
-		restTemplate.put("http://localhost:8080/city", city);
-		City city2 = restTemplate.getForEntity("http://localhost:8080/city/1", City.class).getBody();
+		restTemplate.put(API_URL, city);
+		City city2 = restTemplate.getForEntity(API_URL + "/1", City.class).getBody();
 		assertNotNull(city.getName(), city2.getName());
 	}
 
 	@Test
 	public void testDeleteCity() {
-		ResponseEntity<City[]> response = restTemplate.getForEntity("http://localhost:8080/city",
+		ResponseEntity<City[]> response = restTemplate.getForEntity(API_URL,
 				City[].class);
 		List<City> cities = Arrays.asList(response.getBody());
 		int lastId = cities.get(cities.size() - 1).getId();
-		restTemplate.delete("http://localhost:8080/city/" + lastId);
+		restTemplate.delete(API_URL + "/" + lastId);
 		assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.getForEntity("http://localhost:8080/city/" + lastId, City.class));
+				() -> restTemplate.getForEntity(API_URL + "/" + lastId, City.class));
 	}
 
 	@AfterAll
