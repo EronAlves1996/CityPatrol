@@ -34,7 +34,7 @@ public class Hood {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
-    @OneToMany(mappedBy = "hood")
+    @OneToMany(mappedBy = "hood", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Crime> crimes;
 
