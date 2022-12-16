@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,6 +21,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
@@ -67,8 +71,38 @@ class CitypatrolbackApplicationTests {
 	@Test
 	public void testGetCityByAnIdThatNotExists() {
 		HttpStatusCode statusCode = assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.getForEntity("http://localhost:8080/city/" + 4, City.class)).getStatusCode();
+				() -> restTemplate.getForEntity("http://localhost:8080/city/" + 30, City.class)).getStatusCode();
 		assertEquals(HttpStatusCode.valueOf(404), statusCode);
+	}
+
+	@Test
+	public void testPostCity() {
+		City city = new City();
+		city.setName("Divinópolis");
+		city.setPopulationNumber(20000);
+		ResponseEntity<City> cityCreated = restTemplate.postForEntity("http://localhost:8080/city", city, City.class);
+		assertNotNull(cityCreated.getBody().getId());
+	}
+
+	@Test
+	public void testPutCity() {
+		City city = restTemplate.getForEntity("http://localhost:8080/city/1", City.class).getBody();
+		city.setName("Josafá");
+		city.setHoods(null);
+		restTemplate.put("http://localhost:8080/city", city);
+		City city2 = restTemplate.getForEntity("http://localhost:8080/city/1", City.class).getBody();
+		assertNotNull(city.getName(), city2.getName());
+	}
+
+	@Test
+	public void testDeleteCity() {
+		ResponseEntity<City[]> response = restTemplate.getForEntity("http://localhost:8080/city",
+				City[].class);
+		List<City> cities = Arrays.asList(response.getBody());
+		int lastId = cities.get(cities.size() - 1).getId();
+		restTemplate.delete("http://localhost:8080/city/" + lastId);
+		assertThrows(HttpClientErrorException.class,
+				() -> restTemplate.getForEntity("http://localhost:8080/city/" + lastId, City.class));
 	}
 
 	@AfterAll
