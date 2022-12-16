@@ -12,5 +12,5 @@ public interface HoodRepository extends CrudRepository<Hood, Integer> {
 
     Hood findByCityIdAndId(int cityId, int id);
 
-    void deleteByCityIdAndId(int cityId, int id);
+    void deleteHoodByCityIdAndId(int cityId, int id);
 }

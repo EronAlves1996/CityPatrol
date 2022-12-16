@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,8 +64,9 @@ public class HoodController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public void deleteHood(@PathVariable("cityId") int cityId, @PathVariable("id") int id) {
-        hoodRepository.deleteByCityIdAndId(cityId, id);
+        hoodRepository.deleteHoodByCityIdAndId(cityId, id);
     }
 
 }

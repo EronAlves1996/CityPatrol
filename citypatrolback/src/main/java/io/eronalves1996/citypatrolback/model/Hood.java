@@ -30,7 +30,7 @@ public class Hood {
     private Region region;
     private long populationNumber;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
