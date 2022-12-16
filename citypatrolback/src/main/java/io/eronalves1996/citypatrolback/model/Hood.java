@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,12 +30,12 @@ public class Hood {
     private Region region;
     private long populationNumber;
 
-    @ManyToOne
-    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
     @OneToMany(mappedBy = "hood")
+    @JsonIgnore
     private List<Crime> crimes;
 
     public List<Crime> getCrimes() {

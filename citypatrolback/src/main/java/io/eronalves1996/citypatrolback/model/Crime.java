@@ -2,6 +2,7 @@ package io.eronalves1996.citypatrolback.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,8 +27,7 @@ public class Crime {
     @Column(name = "crime_description")
     private String descrition;
 
-    @ManyToOne
-    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "hood_id", nullable = false)
     private Hood hood;
 
