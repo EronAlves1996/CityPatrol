@@ -33,23 +33,19 @@ public class HoodController {
 
     @GetMapping
     public List<Hood> getHoodsForCity(@PathVariable("cityId") int cityId) {
-        Optional<City> city = cityRepository.findById(cityId);
-        if (city.isPresent())
-            return hoodRepository.findByCity(city.get());
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
+        List<Hood> hoodies = hoodRepository.findByCityId(cityId);
+        if (hoodies.size() != 0)
+            return hoodies;
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exists or doesn't have any hoods");
     }
 
     @GetMapping("/{id}")
     public Hood getHood(@PathVariable("cityId") int cityId, @PathVariable("id") int id) {
-        Optional<City> city = cityRepository.findById(cityId);
-        if (city.isPresent()) {
-            Hood hood = hoodRepository.findByCityAndId(city.get(), id);
-            if (hood == null)
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hood doesn't exist or doesn't on this city");
-            return hood;
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
-
+        Hood hood = hoodRepository.findByCityIdAndId(cityId, id);
+        if (hood == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Hood doesn't exist or doesn't on this city or city doesn't exist");
+        return hood;
     }
 
     @PostMapping
@@ -68,11 +64,7 @@ public class HoodController {
 
     @DeleteMapping("/{id}")
     public void deleteHood(@PathVariable("cityId") int cityId, @PathVariable("id") int id) {
-        Optional<City> city = cityRepository.findById(cityId);
-        if (!city.isPresent())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "City/Hood doesn't exist or this hood doesn't belong on this city");
-        hoodRepository.deleteByCityAndId(city.get(), id);
+        hoodRepository.deleteByCityIdAndId(cityId, id);
     }
 
 }

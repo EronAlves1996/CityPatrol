@@ -53,7 +53,7 @@ class HoodControllerTest {
 	public void testGetHoodsForCity() {
 		Iterable<City> cities = cityRepository.findAll();
 		City city = cities.iterator().next();
-		List<Hood> hoodiesTested = hoodRepository.findByCity(city);
+		List<Hood> hoodiesTested = hoodRepository.findByCityId(city.getId());
 		ResponseEntity<Hood[]> response = restTemplate.getForEntity(API_URL + city.getId() + "/hood", Hood[].class);
 		List<Hood> hoodiesFetched = Arrays.asList(response.getBody());
 		assertNotNull(hoodiesFetched);
@@ -65,7 +65,7 @@ class HoodControllerTest {
 		Iterable<City> cities = cityRepository.findAll();
 		City city = cities.iterator().next();
 		assertThrows(HttpClientErrorException.class,
-				() -> restTemplate.getForEntity(API_URL + city.getId() + 10 + "/hood", Hood[].class));
+				() -> restTemplate.getForEntity(API_URL + (city.getId() + 10) + "/hood", Hood[].class));
 
 	}
 
