@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Hood;
+import io.eronalves1996.citypatrolback.model.Region;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 import io.eronalves1996.citypatrolback.repository.HoodRepository;
 
@@ -110,6 +111,46 @@ class HoodControllerTest {
 		List<Hood> hoods = city.getHoods();
 		assertThrows(HttpClientErrorException.class, () -> restTemplate
 				.getForEntity(API_URL + city2.getId() + "/hood/" + hoods.get(0).getId() + 100, Hood.class));
+	}
+
+	@Test
+	public void testCreateHood() {
+		Iterable<City> cities = cityRepository.findAll();
+		City city = cities.iterator().next();
+		Hood hood = new Hood();
+		hood.setName("Botafogo");
+		hood.setPopulationNumber(2000);
+		hood.setRegion(Region.SOUTH_EAST);
+		ResponseEntity<Hood> response = restTemplate.postForEntity(API_URL + city.getId() + "/hood", hood, Hood.class);
+		Hood hoodFetched = response.getBody();
+		assertNotNull(hoodFetched.getId());
+		assertNotNull(hoodFetched.getCity());
+	}
+
+	@Test
+	@Transactional
+	public void testUpdateHood() {
+		Iterable<City> cities = cityRepository.findAll();
+		City city = cities.iterator().next();
+		Hood hood = city.getHoods().get(0);
+		hood.setName("Janabia");
+		restTemplate.put(API_URL + city.getId() + "/hood", hood);
+		ResponseEntity<Hood> response = restTemplate.getForEntity(API_URL + city.getId() + "/hood/" + hood.getId(),
+				Hood.class);
+		Hood hoodFetched = response.getBody();
+		assertEquals(hood, hoodFetched);
+		assertEquals("Janabia", hoodFetched.getName());
+	}
+
+	@Test
+	@Transactional
+	public void testDeleteHood() {
+		Iterable<City> cities = cityRepository.findAll();
+		City city = cities.iterator().next();
+		Hood hood = city.getHoods().get(0);
+		restTemplate.delete(API_URL + city.getId() + "/hood/" + hood.getId());
+		assertThrows(HttpClientErrorException.class,
+				() -> restTemplate.getForEntity(API_URL + city.getId() + "/hood/" + hood.getId(), Hood.class));
 	}
 
 	@AfterAll
