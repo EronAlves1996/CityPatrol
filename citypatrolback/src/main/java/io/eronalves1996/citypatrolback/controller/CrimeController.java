@@ -39,11 +39,11 @@ public class CrimeController {
     }
 
     @GetMapping
-    public Iterable<Crime> getAllCrimes(@RequestParam(name = "city", required = false) int cityId,
-            @RequestParam(name = "hood", required = false) int hoodId) {
-        if (Integer.valueOf(cityId) != null)
+    public Iterable<Crime> getAllCrimes(@RequestParam(name = "city", required = false) Integer cityId,
+            @RequestParam(name = "hood", required = false) Integer hoodId) {
+        if (cityId != null)
             return getAllCrimesFromCity(cityId);
-        if (Integer.valueOf(hoodId) != null)
+        if (hoodId != null)
             return getAllCrimesFromHood(hoodId);
         return crimeRepository.findAll();
     }
