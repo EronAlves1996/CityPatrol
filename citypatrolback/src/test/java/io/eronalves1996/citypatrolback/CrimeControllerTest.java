@@ -2,7 +2,9 @@ package io.eronalves1996.citypatrolback;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,6 +137,16 @@ class CrimeControllerTest {
 		Crime crimeUpdated = response.getBody();
 		assertEquals(crime, crimeUpdated);
 		assertEquals(crime.getDescrition(), crimeUpdated.getDescrition());
+	}
+
+	@Test
+	@Transactional
+	public void testDeleteCrime() {
+		Crime crime = crimeRepository.findAll().iterator().next();
+		restTemplate.delete(API_URL + "/" + crime.getId());
+		assertThrows(HttpClientErrorException.class,
+				() -> restTemplate.getForEntity(API_URL + "/" + crime.getId(), Crime.class));
+		assertTrue(hoodRepository.findById(crime.getHood().getId()).isPresent());
 	}
 
 	@AfterAll
