@@ -2,13 +2,13 @@ package io.eronalves1996.citypatrolback;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,12 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Crime;
+import io.eronalves1996.citypatrolback.model.Hood;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 import io.eronalves1996.citypatrolback.repository.CrimeRepository;
+import io.eronalves1996.citypatrolback.repository.HoodRepository;
 
 @SpringBootTest
 class CrimeControllerTest {
@@ -36,6 +39,9 @@ class CrimeControllerTest {
 
 	@Autowired
 	private CityRepository cityRepository;
+
+	@Autowired
+	private HoodRepository hoodRepository;
 
 	@BeforeAll
 	public static void loadContainer() throws InterruptedException {
@@ -71,6 +77,25 @@ class CrimeControllerTest {
 		List<Crime> crimesFetched = Arrays.asList(response.getBody());
 		assertNotNull(crimesFetched);
 		assertEquals(crimesForCity.size(), crimesFetched.size());
+	}
+
+	@Test
+	@Transactional
+	public void testGetAllCrimesForCityThatDoesntExist() {
+		// CITY ID 100 doesnt exist on test database
+		assertThrows(HttpClientErrorException.class,
+				() -> restTemplate.getForEntity(API_URL + "?city=" + 100, Crime[].class));
+	}
+
+	public void testGetAllCrimesForHood() {
+		Iterable<Hood> hoodies = hoodRepository.findAll();
+		Hood hood = hoodies.iterator().next();
+		List<Crime> crimesForHood = crimeRepository.findByHoodId(hood.getId());
+
+		ResponseEntity<Crime[]> response = restTemplate.getForEntity(API_URL + "?hood=" + hood.getId(), Crime[].class);
+		List<Crime> crimesFetched = Arrays.asList(response.getBody());
+		assertNotNull(crimesFetched);
+		assertEquals(crimesForHood.size(), crimesFetched.size());
 	}
 
 	@AfterAll
