@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Crime;
+import io.eronalves1996.citypatrolback.model.CrimeType;
 import io.eronalves1996.citypatrolback.model.Hood;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 import io.eronalves1996.citypatrolback.repository.CrimeRepository;
@@ -87,6 +88,7 @@ class CrimeControllerTest {
 				() -> restTemplate.getForEntity(API_URL + "?city=" + 100, Crime[].class));
 	}
 
+	@Test
 	public void testGetAllCrimesForHood() {
 		Iterable<Hood> hoodies = hoodRepository.findAll();
 		Hood hood = hoodies.iterator().next();
@@ -96,6 +98,43 @@ class CrimeControllerTest {
 		List<Crime> crimesFetched = Arrays.asList(response.getBody());
 		assertNotNull(crimesFetched);
 		assertEquals(crimesForHood.size(), crimesFetched.size());
+	}
+
+	@Test
+	public void testGetCrimeById() {
+		Iterable<Crime> crimes = crimeRepository.findAll();
+		Crime crime = crimes.iterator().next();
+		ResponseEntity<Crime> response = restTemplate.getForEntity(API_URL + "/" + crime.getId(), Crime.class);
+		Crime crimeFetched = response.getBody();
+
+		assertEquals(crime, crimeFetched);
+	}
+
+	@Test
+	public void testCreateCrime() {
+		Hood hood = hoodRepository.findAll().iterator().next();
+		Crime crime = new Crime();
+		crime.setType(CrimeType.MURDER);
+		crime.setHood(hood);
+		crime.setDescrition("Ele me matou");
+
+		ResponseEntity<Crime> response = restTemplate.postForEntity(API_URL, crime, Crime.class);
+		Crime crimeCreated = response.getBody();
+		assertNotNull(crimeCreated.getId());
+		assertEquals(crime.getDescrition(), crimeCreated.getDescrition());
+	}
+
+	@Test
+	public void testUpdateCrime() {
+		Crime crime = crimeRepository.findAll().iterator().next();
+		crime.setDescrition("Customized Description");
+
+		restTemplate.put(API_URL, crime);
+		ResponseEntity<Crime> response = restTemplate.getForEntity(API_URL + "/" + crime.getId(), Crime.class);
+
+		Crime crimeUpdated = response.getBody();
+		assertEquals(crime, crimeUpdated);
+		assertEquals(crime.getDescrition(), crimeUpdated.getDescrition());
 	}
 
 	@AfterAll
