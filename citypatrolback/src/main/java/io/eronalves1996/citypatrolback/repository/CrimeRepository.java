@@ -9,5 +9,7 @@ import io.eronalves1996.citypatrolback.model.Hood;
 
 public interface CrimeRepository extends CrudRepository<Crime, Integer> {
 
+    List<Crime> findByHoodCityId(int cityId);
+
     List<Crime> findByHoodIn(List<Hood> hoods);
 }
