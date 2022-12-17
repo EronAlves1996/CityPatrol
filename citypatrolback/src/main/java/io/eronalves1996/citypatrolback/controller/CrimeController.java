@@ -1,6 +1,5 @@
 package io.eronalves1996.citypatrolback.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,26 +15,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Crime;
-import io.eronalves1996.citypatrolback.model.Hood;
-import io.eronalves1996.citypatrolback.repository.CityRepository;
 import io.eronalves1996.citypatrolback.repository.CrimeRepository;
-import io.eronalves1996.citypatrolback.repository.HoodRepository;
 
 @RestController
 @RequestMapping("/crime")
 public class CrimeController {
 
     private CrimeRepository crimeRepository;
-    private HoodRepository hoodRepository;
-    private CityRepository cityRepository;
 
-    public CrimeController(CrimeRepository crimeRepository, HoodRepository hoodRepository,
-            CityRepository cityRepository) {
+    public CrimeController(CrimeRepository crimeRepository) {
         this.crimeRepository = crimeRepository;
-        this.hoodRepository = hoodRepository;
-        this.cityRepository = cityRepository;
     }
 
     @GetMapping
@@ -49,23 +39,17 @@ public class CrimeController {
     }
 
     public List<Crime> getAllCrimesFromCity(int cityId) {
-        Optional<City> city = cityRepository.findById(cityId);
-        if (city.isPresent()) {
-            return city.get().getHoods().stream().map(hood -> hood.getCrimes()).reduce(new ArrayList<Crime>(),
-                    (finalCrimeList, hoodCrimes) -> {
-                        hoodCrimes.forEach(finalCrimeList::add);
-                        return finalCrimeList;
-                    });
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
+        List<Crime> crimesForCity = crimeRepository.findByHoodCityId(cityId);
+        if (crimesForCity.size() == 0)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
+        return crimesForCity;
     }
 
     public List<Crime> getAllCrimesFromHood(int hoodId) {
-        Optional<Hood> hood = hoodRepository.findById(hoodId);
-        if (hood.isPresent()) {
-            return hood.get().getCrimes();
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hood doesn't exist");
+        List<Crime> crimesForHood = crimeRepository.findByHoodId(hoodId);
+        if (crimesForHood.size() == 0)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hood doesn't exist");
+        return crimesForHood;
     }
 
     @GetMapping("/{id}")
