@@ -1,0 +1,8 @@
+FROM mysql:latest
+ENV MYSQL_PASSWORD citypatrol
+ENV MYSQL_ROOT_PASSWORD citypatrol
+ENV MYSQL_USER admin
+ENV MYSQL_DATABASE citypatrol
+WORKDIR /usr/migration
+ADD migration.prod.sql /docker-entrypoint-initdb.d
+EXPOSE 3306
