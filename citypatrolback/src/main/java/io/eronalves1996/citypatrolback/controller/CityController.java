@@ -1,5 +1,6 @@
 package io.eronalves1996.citypatrolback.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.eronalves1996.citypatrolback.dto.CityAnalyticsDTO;
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 
@@ -55,6 +58,15 @@ public class CityController {
     @DeleteMapping("/{id}")
     public void deleteCity(@PathVariable("id") int id) {
         repository.deleteById(id);
+    }
+
+    @GetMapping("/{id}/analytics")
+    public CityAnalyticsDTO getOverallCrimeAnalytics(@PathVariable("id") int id,
+            @RequestParam(name = "proportion", required = false) Integer proportion) {
+        List<Object[]> analytics = repository.getAnalytics(id);
+        if (proportion != null)
+            return new CityAnalyticsDTO(analytics, proportion);
+        return new CityAnalyticsDTO(analytics);
     }
 
 }
