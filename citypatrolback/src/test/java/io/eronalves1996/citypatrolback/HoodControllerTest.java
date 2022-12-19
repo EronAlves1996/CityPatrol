@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import io.eronalves1996.citypatrolback.dto.AnalyticsDTO;
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Hood;
 import io.eronalves1996.citypatrolback.model.Region;
@@ -151,6 +152,19 @@ class HoodControllerTest {
 		restTemplate.delete(API_URL + city.getId() + "/hood/" + hood.getId());
 		assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.getForEntity(API_URL + city.getId() + "/hood/" + hood.getId(), Hood.class));
+	}
+
+	@Test
+	@Transactional
+	public void testGettingAnalytics() {
+		Hood hood = hoodRepository.findAll().iterator().next();
+		AnalyticsDTO analytics = new AnalyticsDTO(hoodRepository.getAnalytics(hood.getId(), hood.getCity().getId()));
+
+		ResponseEntity<AnalyticsDTO> response = restTemplate.getForEntity(
+				API_URL + hood.getCity().getId() + "/hood/" + hood.getId() + "/analytics", AnalyticsDTO.class);
+		AnalyticsDTO analyticsFetched = response.getBody();
+		assertNotNull(analyticsFetched);
+		assertEquals(analytics.getQuantity().size(), analyticsFetched.getQuantity().size());
 	}
 
 	@AfterAll
