@@ -5,9 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @SpringBootApplication
-@OpenAPIDefinition(info = @Info(title = "City Patrol API", description = "Documentation for City Patrol API endpoints"))
+@OpenAPIDefinition(info = @Info(title = "City Patrol API", description = "Documentation for City Patrol API endpoints"), servers = {
+		@Server(url = "/") })
 public class CitypatrolbackApplication {
 
 	public static void main(String[] args) {
