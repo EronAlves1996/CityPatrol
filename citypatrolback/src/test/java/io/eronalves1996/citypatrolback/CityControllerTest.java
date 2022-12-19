@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import io.eronalves1996.citypatrolback.dto.CityAnalyticsDTO;
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 
@@ -63,7 +66,7 @@ class CityControllerTest {
 		Optional<City> testedCity = cityRepository.findById(1);
 		if (testedCity.isPresent()) {
 			int id = testedCity.get().getId();
-			ResponseEntity<City> cityFetched = restTemplate.getForEntity(API_URL + id,
+			ResponseEntity<City> cityFetched = restTemplate.getForEntity(API_URL + "/" + id,
 					City.class);
 			assertEquals(testedCity.get(), cityFetched.getBody());
 		}
@@ -104,6 +107,19 @@ class CityControllerTest {
 		restTemplate.delete(API_URL + "/" + lastId);
 		assertThrows(HttpClientErrorException.class,
 				() -> restTemplate.getForEntity(API_URL + "/" + lastId, City.class));
+	}
+
+	@Test
+	@Transactional
+	public void testGettingAnalytics() {
+		City city = cityRepository.findAll().iterator().next();
+		List<Object[]> analytics = cityRepository.getAnalytics(city.getId());
+		CityAnalyticsDTO cityAnalyticsDTO = new CityAnalyticsDTO(analytics);
+		ResponseEntity<CityAnalyticsDTO> response = restTemplate
+				.getForEntity(API_URL + "/" + city.getId() + "/analytics", CityAnalyticsDTO.class);
+		CityAnalyticsDTO cityAnalyticsFetched = response.getBody();
+		assertNotNull(cityAnalyticsFetched);
+		assertEquals(cityAnalyticsDTO.getQuantity().size(), cityAnalyticsFetched.getQuantity().size());
 	}
 
 	@AfterAll
