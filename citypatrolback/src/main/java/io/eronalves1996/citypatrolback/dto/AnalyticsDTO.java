@@ -6,22 +6,22 @@ import java.util.Map;
 
 import io.eronalves1996.citypatrolback.model.CrimeType;
 
-public class CityAnalyticsDTO {
+public class AnalyticsDTO {
 
     private long populationNumber;
     private Map<CrimeType, Double> quantity = new HashMap<>();
 
-    protected CityAnalyticsDTO() {
+    protected AnalyticsDTO() {
     }
 
-    public CityAnalyticsDTO(List<Object[]> rawAnalytics) {
+    public AnalyticsDTO(List<Object[]> rawAnalytics) {
         setPopulation((long) rawAnalytics.get(0)[0]);
         rawAnalytics.forEach(analytic -> {
             quantity.put((CrimeType) analytic[1], Long.valueOf((long) analytic[2]).doubleValue());
         });
     }
 
-    public CityAnalyticsDTO(List<Object[]> rawAnalytics, int proportion) {
+    public AnalyticsDTO(List<Object[]> rawAnalytics, int proportion) {
         setPopulation((long) rawAnalytics.get(0)[0]);
         rawAnalytics.forEach(analytic -> {
             quantity.put((CrimeType) analytic[1],

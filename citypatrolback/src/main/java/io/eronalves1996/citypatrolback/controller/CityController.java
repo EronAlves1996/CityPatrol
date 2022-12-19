@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import io.eronalves1996.citypatrolback.dto.CityAnalyticsDTO;
+import io.eronalves1996.citypatrolback.dto.AnalyticsDTO;
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 
@@ -61,12 +61,12 @@ public class CityController {
     }
 
     @GetMapping("/{id}/analytics")
-    public CityAnalyticsDTO getOverallCrimeAnalytics(@PathVariable("id") int id,
+    public AnalyticsDTO getOverallCrimeAnalytics(@PathVariable("id") int id,
             @RequestParam(name = "proportion", required = false) Integer proportion) {
         List<Object[]> analytics = repository.getAnalytics(id);
         if (proportion != null)
-            return new CityAnalyticsDTO(analytics, proportion);
-        return new CityAnalyticsDTO(analytics);
+            return new AnalyticsDTO(analytics, proportion);
+        return new AnalyticsDTO(analytics);
     }
 
 }
