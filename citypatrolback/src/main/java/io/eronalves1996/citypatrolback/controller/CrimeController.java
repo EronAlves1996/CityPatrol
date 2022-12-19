@@ -17,6 +17,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import io.eronalves1996.citypatrolback.model.Crime;
 import io.eronalves1996.citypatrolback.repository.CrimeRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/crime")
@@ -28,9 +34,14 @@ public class CrimeController {
         this.crimeRepository = crimeRepository;
     }
 
+    @Operation(summary = "Get all Crimes")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "An array containing all crimes", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Crime[].class)))
+    })
     @GetMapping
-    public Iterable<Crime> getAllCrimes(@RequestParam(name = "city", required = false) Integer cityId,
-            @RequestParam(name = "hood", required = false) Integer hoodId) {
+    public Iterable<Crime> getAllCrimes(
+            @Parameter(description = "id of the city") @RequestParam(name = "city", required = false) Integer cityId,
+            @Parameter(description = "id of the hood") @RequestParam(name = "hood", required = false) Integer hoodId) {
         if (cityId != null)
             return getAllCrimesFromCity(cityId);
         if (hoodId != null)
@@ -38,22 +49,27 @@ public class CrimeController {
         return crimeRepository.findAll();
     }
 
-    public List<Crime> getAllCrimesFromCity(int cityId) {
+    private List<Crime> getAllCrimesFromCity(int cityId) {
         List<Crime> crimesForCity = crimeRepository.findByHoodCityId(cityId);
         if (crimesForCity.size() == 0)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
         return crimesForCity;
     }
 
-    public List<Crime> getAllCrimesFromHood(int hoodId) {
+    private List<Crime> getAllCrimesFromHood(int hoodId) {
         List<Crime> crimesForHood = crimeRepository.findByHoodId(hoodId);
         if (crimesForHood.size() == 0)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hood doesn't exist");
         return crimesForHood;
     }
 
+    @Operation(summary = "Get a crime by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Crime founded", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Crime.class))),
+            @ApiResponse(responseCode = "404", description = "Crime not founded", content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/{id}")
-    public Crime getCrimeById(@PathVariable("id") int id) {
+    public Crime getCrimeById(@Parameter(description = "Id of the crime") @PathVariable("id") int id) {
         Optional<Crime> crime = crimeRepository.findById(id);
         if (crime.isPresent()) {
             return crime.get();
@@ -61,18 +77,30 @@ public class CrimeController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Crime registry doesn't exist");
     }
 
+    @Operation(summary = "Register a new crime")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Crime created", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Crime.class))),
+    })
     @PostMapping
     public Crime createCrimeRegistry(@RequestBody Crime crime) {
         return crimeRepository.save(crime);
     }
 
+    @Operation(summary = "Update a crime register")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Crime updated", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Crime.class))),
+    })
     @PutMapping
     public Crime updateCrime(@RequestBody Crime crime) {
         return createCrimeRegistry(crime);
     }
 
+    @Operation(summary = "Delete a crime by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Crime deleted", content = @Content(mediaType = "application/json"))
+    })
     @DeleteMapping("/{id}")
-    public void deleteCrime(@PathVariable("id") int id) {
+    public void deleteCrime(@Parameter(description = "Id of the crime") @PathVariable("id") int id) {
         crimeRepository.deleteById(id);
     }
 

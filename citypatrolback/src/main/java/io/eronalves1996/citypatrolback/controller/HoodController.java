@@ -21,6 +21,12 @@ import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Hood;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 import io.eronalves1996.citypatrolback.repository.HoodRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/city/{cityId}/hood")
@@ -34,16 +40,25 @@ public class HoodController {
         this.cityRepository = cityRepository;
     }
 
+    @Operation(summary = "Get all hoods of some city")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "An array containing all hoods for some city", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Hood[].class))),
+            @ApiResponse(responseCode = "404", description = "City not found", content = @Content(mediaType = "application/json")) })
     @GetMapping
-    public List<Hood> getHoodsForCity(@PathVariable("cityId") int cityId) {
+    public List<Hood> getHoodsForCity(@Parameter(description = "id of the city") @PathVariable("cityId") int cityId) {
         List<Hood> hoodies = hoodRepository.findByCityId(cityId);
         if (hoodies.size() != 0)
             return hoodies;
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exists or doesn't have any hoods");
     }
 
+    @Operation(summary = "Get a hood of some city by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hood founded", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Hood.class))),
+            @ApiResponse(responseCode = "404", description = "City/Hood not found", content = @Content(mediaType = "application/json")) })
     @GetMapping("/{id}")
-    public Hood getHood(@PathVariable("cityId") int cityId, @PathVariable("id") int id) {
+    public Hood getHood(@Parameter(description = "id of the city") @PathVariable("cityId") int cityId,
+            @Parameter(description = "id of the hood") @PathVariable("id") int id) {
         Hood hood = hoodRepository.findByCityIdAndId(cityId, id);
         if (hood == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -51,8 +66,13 @@ public class HoodController {
         return hood;
     }
 
+    @Operation(summary = "Create a hood in some city")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "City created", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Hood.class))),
+            @ApiResponse(responseCode = "404", description = "City not found", content = @Content(mediaType = "application/json")) })
     @PostMapping
-    public Hood createHood(@PathVariable("cityId") int cityId, @RequestBody Hood hood) {
+    public Hood createHood(@Parameter(description = "id of the city") @PathVariable("cityId") int cityId,
+            @RequestBody Hood hood) {
         Optional<City> city = cityRepository.findById(cityId);
         if (!city.isPresent())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "City doesn't exist");
@@ -60,21 +80,39 @@ public class HoodController {
         return hoodRepository.save(hood);
     }
 
+    @Operation(summary = "Update a hood in some city")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hood updated", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Hood.class))),
+            @ApiResponse(responseCode = "404", description = "City not found", content = @Content(mediaType = "application/json")) })
     @PutMapping
-    public Hood updateHood(@PathVariable("cityId") int cityId, @RequestBody Hood hood) {
+    public Hood updateHood(@Parameter(description = "id of the city") @PathVariable("cityId") int cityId,
+            @RequestBody Hood hood) {
         return createHood(cityId, hood);
     }
 
+    @Operation(summary = "Delete a hood in some city")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hood deleted", content = @Content(mediaType = "application/json")) })
     @DeleteMapping("/{id}")
     @Transactional
-    public void deleteHood(@PathVariable("cityId") int cityId, @PathVariable("id") int id) {
+    public void deleteHood(@Parameter(description = "id of the city") @PathVariable("cityId") int cityId,
+            @Parameter(description = "id of the hood") @PathVariable("id") int id) {
         hoodRepository.deleteHoodByCityIdAndId(cityId, id);
     }
 
+    @Operation(summary = "Get analytics about crime information about a hood")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Overall analytics about a hood", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AnalyticsDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Hood not found", content = @Content(mediaType = "application/json"))
+
+    })
     @GetMapping("/{id}/analytics")
-    public AnalyticsDTO getAnalytics(@PathVariable("cityId") int cityId, @PathVariable("id") int id,
-            @RequestParam(name = "proportion", required = false) Integer proportion) {
+    public AnalyticsDTO getAnalytics(@Parameter(description = "id of the city") @PathVariable("cityId") int cityId,
+            @Parameter(description = "id of the hood") @PathVariable("id") int id,
+            @Parameter(description = "get results in some proportion") @RequestParam(name = "proportion", required = false) Integer proportion) {
         List<Object[]> analytics = hoodRepository.getAnalytics(id, cityId);
+        if (analytics.size() == 0)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         if (proportion != null)
             return new AnalyticsDTO(analytics, proportion);
         return new AnalyticsDTO(analytics);
