@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import io.eronalves1996.citypatrolback.dto.CityAnalyticsDTO;
+import io.eronalves1996.citypatrolback.dto.AnalyticsDTO;
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
 
@@ -114,10 +113,10 @@ class CityControllerTest {
 	public void testGettingAnalytics() {
 		City city = cityRepository.findAll().iterator().next();
 		List<Object[]> analytics = cityRepository.getAnalytics(city.getId());
-		CityAnalyticsDTO cityAnalyticsDTO = new CityAnalyticsDTO(analytics);
-		ResponseEntity<CityAnalyticsDTO> response = restTemplate
-				.getForEntity(API_URL + "/" + city.getId() + "/analytics", CityAnalyticsDTO.class);
-		CityAnalyticsDTO cityAnalyticsFetched = response.getBody();
+		AnalyticsDTO cityAnalyticsDTO = new AnalyticsDTO(analytics);
+		ResponseEntity<AnalyticsDTO> response = restTemplate
+				.getForEntity(API_URL + "/" + city.getId() + "/analytics", AnalyticsDTO.class);
+		AnalyticsDTO cityAnalyticsFetched = response.getBody();
 		assertNotNull(cityAnalyticsFetched);
 		assertEquals(cityAnalyticsDTO.getQuantity().size(), cityAnalyticsFetched.getQuantity().size());
 	}
