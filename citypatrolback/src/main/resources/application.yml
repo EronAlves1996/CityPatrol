@@ -18,6 +18,8 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url:
+    url: jdbc:mysql://
     username:
     password:
+  jpa:
+    database: mysql
