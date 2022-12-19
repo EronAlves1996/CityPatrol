@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.eronalves1996.citypatrolback.dto.AnalyticsDTO;
 import io.eronalves1996.citypatrolback.model.City;
 import io.eronalves1996.citypatrolback.model.Hood;
 import io.eronalves1996.citypatrolback.repository.CityRepository;
@@ -67,6 +69,15 @@ public class HoodController {
     @Transactional
     public void deleteHood(@PathVariable("cityId") int cityId, @PathVariable("id") int id) {
         hoodRepository.deleteHoodByCityIdAndId(cityId, id);
+    }
+
+    @GetMapping("/{id}/analytics")
+    public AnalyticsDTO getAnalytics(@PathVariable("cityId") int cityId, @PathVariable("id") int id,
+            @RequestParam(name = "proportion", required = false) Integer proportion) {
+        List<Object[]> analytics = hoodRepository.getAnalytics(id, cityId);
+        if (proportion != null)
+            return new AnalyticsDTO(analytics, proportion);
+        return new AnalyticsDTO(analytics);
     }
 
 }
