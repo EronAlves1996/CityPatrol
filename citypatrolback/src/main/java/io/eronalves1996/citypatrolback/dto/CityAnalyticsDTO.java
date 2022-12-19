@@ -11,6 +11,9 @@ public class CityAnalyticsDTO {
     private long populationNumber;
     private Map<CrimeType, Double> quantity = new HashMap<>();
 
+    protected CityAnalyticsDTO() {
+    }
+
     public CityAnalyticsDTO(List<Object[]> rawAnalytics) {
         setPopulation((long) rawAnalytics.get(0)[0]);
         rawAnalytics.forEach(analytic -> {
